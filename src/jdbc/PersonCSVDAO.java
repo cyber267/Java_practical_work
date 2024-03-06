@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class TestSER1 {
-    public static void test () throws IOException {
+public class PersonCSVDAO {
+    public static List<person> readAll () throws IOException {
         Path currentFilePath = Path.of("data/data.csv");
 //        System.out.println("looking for file at this location:" + currentFilePath.toFile().getAbsolutePath());
         List<String> lines = Files.readAllLines(currentFilePath);
@@ -17,23 +19,18 @@ public class TestSER1 {
 
         List<person> persons = new ArrayList<>();
         lines.remove(0);
-        String firstLine = lines.get(0);
-        person personFromFirstLine = extractPerson(firstLine.split(","));
-        System.out.println(personFromFirstLine);
 
-//        for (String line : lines){
-//            String[] parts = line.split(",");
-//            person Person = extractPerson(parts);
-//            persons.add(Person);
-//        }
-
-//        List<person> personWithStream = lines.stream()
-//                .map(s -> extractPerson(s.split(",")))
-//                .toList();
-//
-//        System.out.println(personWithStream);
-
+        for (String line : lines){
+            String[] parts = line.split(",");
+            person Person = extractPerson(parts);
+            persons.add(Person);
+        }
+        return persons.stream()
+                .sorted(Comparator.comparingInt(person::getHeight))
+                .collect(Collectors.toList());
     }
+
+
 
     private static person extractPerson(String[] row)  {
         person person = new person();
@@ -43,5 +40,6 @@ public class TestSER1 {
         person.setHeight(Integer.parseInt(row[3].trim()));
         person.setWeight(Integer.parseInt(row[4].trim()));
         return person;
-    }
-    }
+
+}
+}
